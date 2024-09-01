@@ -15,5 +15,4 @@ public class FilmorateApplication {
 				.setLevel(ch.qos.logback.classic.Level.convertAnSLF4JLevel(Level.INFO));
 		SpringApplication.run(FilmorateApplication.class, args);
 	}
-
 }
