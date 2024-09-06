@@ -1,92 +1,35 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-
-import java.time.LocalDate;
+import ru.yandex.practicum.filmorate.service.UserService;
 import java.util.Collection;
-import java.util.HashMap;
 
 import static ru.yandex.practicum.filmorate.FilmorateApplication.log;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private HashMap<Integer, User> users = new HashMap<>();
+    private UserService userService = new UserService();
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        return users.values();
+        return userService.getAllUsers();
+    }
+
+    @GetMapping("/post/{postId}")
+    public User getUserById(@PathVariable("userId") String userId) {
+        return UserService.getUserById(Integer.getInteger(userId));
     }
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        if (validation(user)) {
-            user.setId(getNextId());
-            if ((user.getName() == null || user.getName().isBlank() || user.getName().isEmpty()) && (user.getLogin() != null && !user.getLogin().isBlank() && !user.getLogin().isEmpty())) {
-                user.setName(user.getLogin());
-                log.info("Имя для пользователя {} будет равно его логину {}", user.getName(), user.getLogin());
-            }
-            // сохраняем нового пользователя
-            users.put(user.getId(), user);
-            log.info("Добавлен новый пользователь {}", user.getName());
-        }
-        return user;
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
-        if (user.getId() == null) {
-            throw new ValidationException("Id пользователя должен быть указан");
-        }
-        if (!users.containsKey(user.getId())) {
-            throw new ValidationException("Пользователя с таким ID нет");
-        }
-        if (validation(user)) {
-            // обновлем пользователя
-            users.put(user.getId(), user);
-        }
-        return user;
-    }
 
-    public boolean validation(User user) {
-        boolean result = true;
-        if (user.getEmail() == null || user.getEmail().isBlank() || user.getEmail().isEmpty()) {
-            result = false;
-            log.info("Валидация email не прошла");
-            throw new ValidationException("Имейл не может быть пустым");
-        }
-        if (!user.getEmail().contains("@")) {
-            result = false;
-            log.info("Валидация 2 email не прошла");
-            throw new ValidationException("Неверный формат почтового адреса");
-        }
-        if (user.getLogin().isEmpty()) {
-            result = false;
-            log.info("Валидация логина не прошла");
-            throw new ValidationException("Логин не может быть пустым");
-        }
-        if (user.getLogin().contains(" ")) {
-            result = false;
-            log.info("Валидация логина на пробелы не прошла");
-            throw new ValidationException("Логин не может содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            result = false;
-            log.info("Валидация на дату рождения не прошла");
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-
-        return result;
-    }
-
-    private int getNextId() {
-        int currentMaxId = users.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return userService.updateUser(user);
     }
 }
