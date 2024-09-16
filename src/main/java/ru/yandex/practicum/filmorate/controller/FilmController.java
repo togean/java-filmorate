@@ -51,13 +51,11 @@ public class FilmController {
     @PutMapping("/films/{filmId}/like/{userId}")
     public void setLikeToFilm(@PathVariable("filmId") String filmId, @PathVariable("userId") String userId) {
         filmService.setLike(Integer.valueOf(filmId), Integer.valueOf(userId));
-        //return filmService.setLike(Integer.valueOf(filmId), Integer.valueOf(userId));
     }
 
     @DeleteMapping("/films/{filmId}/like/{userId}")
     public void deleteFilmLike(@PathVariable("filmId") String filmId, @PathVariable("userId") String userId) {
         filmService.deleteLike(Integer.valueOf(filmId), Integer.valueOf(userId));
-        //return filmService.deleteLike(Integer.valueOf(filmId), Integer.valueOf(userId));
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class})

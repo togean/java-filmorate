@@ -54,13 +54,11 @@ public class UserController {
     @PutMapping("/users/{userId}/friends/{friendId}")
     public void addFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) {
         userService.addFriend(Integer.valueOf(userId), Integer.valueOf(friendId));
-        //return userService.addFriend(Integer.valueOf(userId), Integer.valueOf(friendId));
     }
 
     @DeleteMapping("/users/{userId}/friends/{friendId}")
     public void deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) {
         userService.deleteFriend(Integer.valueOf(userId), Integer.valueOf(friendId));
-        //return userService.deleteFriend(Integer.valueOf(userId), Integer.valueOf(friendId));
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class})

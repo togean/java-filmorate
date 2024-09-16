@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -39,7 +38,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public void addFriend(Integer userId, Integer friendId) {
-        String result = null;
         Optional<User> friend1 = Optional.ofNullable(userStorage.getUserById(userId));
         Optional<User> friend2 = Optional.ofNullable(userStorage.getUserById(friendId));
         if (friend1.isEmpty() || friend2.isEmpty()) {
@@ -66,12 +64,9 @@ public class UserServiceImpl implements UserService {
         friend2.get().setFriends(newListOfFriendsForUser2);
         userStorage.updateUser(friend1.get());
         userStorage.updateUser(friend2.get());
-        result = "Пользователи добавлены в друзья друг другу";
-        //return result;
     }
 
     public void deleteFriend(Integer userId, Integer friendId) {
-        String result = null;
         Optional<User> friend1 = Optional.ofNullable(userStorage.getUserById(userId));
         Optional<User> friend2 = Optional.ofNullable(userStorage.getUserById(friendId));
         if (friend1.isEmpty() || friend2.isEmpty()) {
@@ -82,7 +77,6 @@ public class UserServiceImpl implements UserService {
         Optional<Set<Integer>> listOfFriendsForUser2 = Optional.ofNullable(userStorage.getUserById(friendId).getFriends());
         if (listOfFriendsForUser1.isEmpty() || listOfFriendsForUser2.isEmpty()) {
             log.info("Один или оба пользователя не имеют друзей");
-            //throw new NotFoundException("Один или оба пользователя не имеют друзей");
         } else {
             Set<Integer> newListOfFriendsForUser1 = new HashSet<>();
             Set<Integer> newListOfFriendsForUser2 = new HashSet<>();
@@ -91,7 +85,6 @@ public class UserServiceImpl implements UserService {
             newListOfFriendsForUser2.addAll(listOfFriendsForUser2.get());
             if ((!newListOfFriendsForUser2.contains(userId)) || (!newListOfFriendsForUser1.contains(friendId))) {
                 log.info("Выбранные пользователя не являются друзьями");
-                //throw new NotFoundException("Выбранные пользователя не являются друзьями");
             }
 
             newListOfFriendsForUser1.remove(friendId);
@@ -100,10 +93,7 @@ public class UserServiceImpl implements UserService {
             friend2.get().setFriends(newListOfFriendsForUser2);
             userStorage.updateUser(friend1.get());
             userStorage.updateUser(friend2.get());
-
-            result = "Пользователи удалены из друзей";
         }
-        //return result;
     }
 
     public Set<User> getUserFriends(Integer userId) {
@@ -116,7 +106,6 @@ public class UserServiceImpl implements UserService {
         Optional<Set<Integer>> listOfUserFriends = Optional.ofNullable(userStorage.getUserById(userId).getFriends());
         if (listOfUserFriends.isEmpty()) {
             log.info("У пользователя нет друзей");
-            //throw new NotFoundException("У пользователя нет друзей");
             return listOfFriends;
         }
         for (Integer i : listOfUserFriends.get()) {

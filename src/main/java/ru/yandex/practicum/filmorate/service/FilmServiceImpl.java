@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -86,7 +85,6 @@ public class FilmServiceImpl implements FilmService {
         }
         filmToBeLiked.get().setUsersWhoSetLikes(newListOfUsersWhoLikesFilm);
         filmStorage.updateFilm(filmToBeLiked.get());
-        //return filmToBeLiked.get();
     }
 
     public void deleteLike(Integer filmId, Integer userId) {
@@ -105,6 +103,5 @@ public class FilmServiceImpl implements FilmService {
                 filmStorage.updateFilm(filmToBeNotLiked.get());
             }
         }
-        //return filmToBeNotLiked.get();
     }
 }
