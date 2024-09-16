@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate;
 
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
