@@ -1,28 +1,16 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.util.Collection;
+import java.util.List;
 
-@Service
-public class FilmService {
-    private static InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
+public interface FilmService {
+    List<Film> getAllFilms();
 
-    public Collection<Film> getAllUsers() {
-        return filmStorage.getAllFilms();
-    }
+    Film getFilmById(Integer filmId);
 
-    public static Film getFilmById(Integer filmId) {
-        return filmStorage.getFilmById(filmId);
-    }
+    Film createFilm(Film film);
 
-    public static Film createFilm(Film film) {
-        return filmStorage.createFilm(film);
-    }
-
-    public static Film updateFilm(Film user) {
-        return filmStorage.updateFilm(user);
-    }
+    Film updateFilm(Film user);
 }

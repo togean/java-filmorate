@@ -10,7 +10,11 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FilmControllerTest {
-    private final FilmController filmController = new FilmController();
+    private final FilmController filmController;
+
+    public FilmControllerTest(FilmController filmController) {
+        this.filmController = filmController;
+    }
 
     @Test
     public void filmShouldHaveName() {
