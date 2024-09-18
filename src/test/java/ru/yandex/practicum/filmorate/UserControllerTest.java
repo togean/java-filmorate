@@ -1,16 +1,20 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserServiceImpl;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@Component
 public class UserControllerTest {
-    private final UserController userController = new UserController();
+    private final UserController userController = new UserController(new UserServiceImpl(new InMemoryUserStorage()));
 
     @Test
     public void userShouldHaveLogin() {

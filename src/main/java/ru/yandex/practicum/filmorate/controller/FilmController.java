@@ -1,80 +1,79 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.yandex.practicum.filmorate.exception.InternalServerErrorException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-
-import java.time.LocalDate;
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
 import java.util.Collection;
-import java.util.HashMap;
-
-import static ru.yandex.practicum.filmorate.FilmorateApplication.log;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/films")
+@RequestMapping
+@AllArgsConstructor
 public class FilmController {
-    private HashMap<Integer, Film> films = new HashMap<>();
+    @Autowired
+    private FilmServiceImpl filmService;
 
-    @GetMapping
+    @GetMapping("/films")
     public Collection<Film> getAllFilms() {
-        return films.values();
+        return filmService.getAllFilms();
     }
 
-    @PostMapping
+    @GetMapping("/films/{filmId}")
+    public Film getFilmById(@PathVariable("filmId") String filmId) {
+        return filmService.getFilmById(Integer.valueOf(filmId));
+    }
+
+    @GetMapping("/films/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count) {
+        return filmService.getPopularFilms(count);
+    }
+
+    @PostMapping("/films")
     public Film createFilm(@RequestBody Film film) {
-        if (validation(film)) {
-            // формируем дополнительные данные
-            film.setId(getNextId());
-            // сохраняем новый фильм
-            films.put(film.getId(), film);
-            log.info("Добавлен новый фильм \"{}\"", film.getName());
-        }
-        return film;
+        return filmService.createFilm(film);
     }
 
-    @PutMapping
+    @PutMapping("/films")
     public Film updateFilm(@RequestBody Film film) {
-        if (film.getId() == null) {
-            throw new ValidationException("Id фильма должен быть указан");
-        }
-        if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильма с таким ID нет");
-        }
-        if (validation(film)) {
-            // Обновляем новый фильм
-            films.put(film.getId(), film);
-        }
-        return film;
+        return filmService.updateFilm(film);
     }
 
-    public boolean validation(Film film) {
-        boolean result = true;
-        if (film.getName().isEmpty()) {
-            log.info("Название не может быть пустым");
-            throw new ValidationException("Название не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            log.info("Описание не может быть длиннее 200 символов");
-            throw new ValidationException("Описание не может быть длиннее 200 символов");
-        }
-        if (film.getDuration() <= 0) {
-            log.info("Длительность фильма должна быть больше 0");
-            throw new ValidationException("Длительность фильма должна быть больше 0");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.info("Производство фильма не может быть ранее 28 декабря 1895 года");
-            throw new ValidationException("Производство фильма не может быть ранее 28 декабря 1895 года");
-        }
-
-        return result;
+    @PutMapping("/films/{filmId}/like/{userId}")
+    public void setLikeToFilm(@PathVariable("filmId") String filmId, @PathVariable("userId") String userId) {
+        filmService.setLike(Integer.valueOf(filmId), Integer.valueOf(userId));
     }
 
-    private int getNextId() {
-        int currentMaxId = films.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @DeleteMapping("/films/{filmId}/like/{userId}")
+    public void deleteFilmLike(@PathVariable("filmId") String filmId, @PathVariable("userId") String userId) {
+        filmService.deleteLike(Integer.valueOf(filmId), Integer.valueOf(userId));
     }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleValidationException(final ValidationException e) {
+        return Map.of("Ошибка", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotFoundException(final NotFoundException e) {
+        return Map.of("Ошибка", e.getMessage());
+    }
+
+    @ExceptionHandler({Exception.class, NoSuchElementException.class, IllegalStateException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleInternalServerErrorException(final InternalServerErrorException e) {
+        return Map.of("Ошибка", e.getMessage());
+    }
+
 }

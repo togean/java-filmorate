@@ -1,16 +1,19 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-
+import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+@Component
 public class FilmControllerTest {
-    private final FilmController filmController = new FilmController();
+    private final FilmController filmController = new FilmController(new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
 
     @Test
     public void filmShouldHaveName() {
