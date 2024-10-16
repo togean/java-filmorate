@@ -116,6 +116,7 @@ public class FilmsRepository implements FilmStorage {
         }
     }
 
+    //Выборка пользователей для фильма
     private void getUsers(List<Film> filmListWithGenres, Integer userid, Integer filmId) {
         Set<Integer> usersWhoLikeFilm = new HashSet<>();
         for (Film film : filmListWithGenres) {
