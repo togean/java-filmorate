@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.MpaInstance;
 import ru.yandex.practicum.filmorate.storage.MpaRateStorage;
 
 import java.util.List;
+
 @Repository
 @AllArgsConstructor
 @Component
