@@ -15,7 +15,9 @@ import ru.yandex.practicum.filmorate.service.GenreServiceImpl;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @Component
+
 public class FilmControllerTest {
     private final FilmController filmController = new FilmController(new FilmServiceImpl(new FilmsRepository(new JdbcTemplate()), new UsersRepository(new JdbcTemplate()), new GenreServiceImpl(new GenreRepository(new JdbcTemplate()))));
 
