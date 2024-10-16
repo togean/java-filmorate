@@ -1,19 +1,23 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.repository.FilmsRepository;
+import ru.yandex.practicum.filmorate.repository.GenreRepository;
+import ru.yandex.practicum.filmorate.repository.UsersRepository;
 import ru.yandex.practicum.filmorate.service.FilmServiceImpl;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.GenreServiceImpl;
+
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 @Component
 public class FilmControllerTest {
-    private final FilmController filmController = new FilmController(new FilmServiceImpl(new InMemoryFilmStorage(), new InMemoryUserStorage()));
+    private final FilmController filmController = new FilmController(new FilmServiceImpl(new FilmsRepository(new JdbcTemplate()), new UsersRepository(new JdbcTemplate()), new GenreServiceImpl(new GenreRepository(new JdbcTemplate()))));
 
     @Test
     public void filmShouldHaveName() {

@@ -11,5 +11,5 @@ public interface FilmService {
 
     Film createFilm(Film film);
 
-    Film updateFilm(Film user);
+    Film updateFilm(Film film);
 }
