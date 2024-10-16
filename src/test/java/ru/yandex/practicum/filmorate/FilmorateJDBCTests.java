@@ -41,12 +41,13 @@ public class FilmorateJDBCTests {
                         assertThat(user).hasFieldOrPropertyWithValue("id", 1)
                 );
     }
+
     @Test
     public void testUserHasFriend() {
         Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
-        Set<Integer> userFriends =  userOptional.get().getFriends();
+        Set<Integer> userFriends = userOptional.get().getFriends();
         Optional<Integer> friendId = userFriends.stream().findFirst();
-        assertEquals(friendId.get(),2);
+        assertEquals(friendId.get(), 2);
 
     }
 
@@ -65,19 +66,19 @@ public class FilmorateJDBCTests {
     public void testFilmHasGenre() {
 
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(1));
-        Set<Genre> genreSet =  filmOptional.get().getGenres();
+        Set<Genre> genreSet = filmOptional.get().getGenres();
         Optional<Genre> filmGenre = genreSet.stream().findFirst();
         int genreId = filmGenre.get().getId();
-        assertEquals(genreId,1);
+        assertEquals(genreId, 1);
 
     }
 
     @Test
     public void testFilmHasUserWhoLikeIt() {
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(1));
-        Set<Integer> userSet =  filmOptional.get().getUsersWhoSetLikes();
+        Set<Integer> userSet = filmOptional.get().getUsersWhoSetLikes();
         Optional<Integer> userId = userSet.stream().findFirst();
-        assertEquals(userId.get(),1);
+        assertEquals(userId.get(), 1);
 
     }
 
@@ -102,7 +103,5 @@ public class FilmorateJDBCTests {
                         assertThat(mpa).hasFieldOrPropertyWithValue("id", 1)
                 );
     }
-
-
 
 }
