@@ -39,6 +39,9 @@ public class UsersRepository implements UserStorage {
     public User createUser(User user) {
         String email = user.getEmail();
         String name = user.getName();
+        if (name.contains("'")) {
+            name.replace("'", "''");
+        }
         LocalDate birthday = user.getBirthday();
         String login = user.getLogin();
         String sqlStatement = "INSERT INTO users (name, login, email, birthday) VALUES ('" + name + "','" + login + "','" + email + "','" + birthday + "')";
@@ -61,6 +64,9 @@ public class UsersRepository implements UserStorage {
     public User updateUser(User user) {
         int userId = user.getId();
         String name = user.getName();
+        if (name.contains("'")) {
+            name.replace("'", "''");
+        }
         String login = user.getLogin();
         LocalDate birthday = user.getBirthday();
         String email = user.getEmail();
@@ -74,7 +80,6 @@ public class UsersRepository implements UserStorage {
             return null;
         }
         if (!(friends == null)) {
-            log.info("Кол-во друзей {}", friends.size());
             sqlStatement = "DELETE FROM users_friends  WHERE user_id =" + userId;
             jdbcTemplate.execute(sqlStatement);
             for (Integer i : friends) {

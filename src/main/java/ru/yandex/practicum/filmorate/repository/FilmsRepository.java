@@ -268,10 +268,7 @@ public class FilmsRepository implements FilmStorage {
                     usersWhoLikeFilm.add(user);
                 }
             } while (rs.next());
-            log.info("Всего собрались жанры в таком порядке {}", filmGenres);
-
             selectedFilm.setGenres(filmGenres);
-            log.info("После копирования в фильме жанры расположены так: {}", selectedFilm.getGenres());
             selectedFilm.setUsersWhoSetLikes(usersWhoLikeFilm);
             return selectedFilm;
         };
