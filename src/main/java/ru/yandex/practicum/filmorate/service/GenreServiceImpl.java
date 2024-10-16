@@ -21,8 +21,8 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public Genre getGenreById(Integer generId) {
-        return genreStorage.getGenreById(generId);
+    public Genre getGenreById(Integer genreId) {
+        return genreStorage.getGenreById(genreId);
     }
 
     @Override

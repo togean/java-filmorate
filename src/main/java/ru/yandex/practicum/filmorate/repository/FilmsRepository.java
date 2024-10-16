@@ -75,7 +75,8 @@ public class FilmsRepository implements FilmStorage {
         return allFilmsWithGenres;
     }
 
-    private void FillGenres(List<Film> filmList, List<Film> filmListWithGenres, Film filmToCheck, Genre genre) {;
+    private void FillGenres(List<Film> filmList, List<Film> filmListWithGenres, Film filmToCheck, Genre genre) {
+        ;
         SortedSet<Genre> genres = new TreeSet<>();
         if (filmList.contains(filmToCheck)) {
             Film updatedFilm = filmToCheck;
@@ -92,7 +93,7 @@ public class FilmsRepository implements FilmStorage {
             genres.stream().sorted(new Comparator<Genre>() {
                 @Override
                 public int compare(Genre o1, Genre o2) {
-                    return o1.getId()- o2.getId();
+                    return o1.getId() - o2.getId();
                 }
             });
             updatedFilm.setGenres(genres);
@@ -115,22 +116,15 @@ public class FilmsRepository implements FilmStorage {
 
     private void getUsers(List<Film> filmListWithGenres, Integer userid, Integer filmId) {
         Set<Integer> usersWhoLikeFilm = new HashSet<>();
-        for(Film film : filmListWithGenres){
-            if(film.getId()==filmId){
-                if(!(film.getUsersWhoSetLikes() ==null)){
+        for (Film film : filmListWithGenres) {
+            if (film.getId() == filmId) {
+                if (!(film.getUsersWhoSetLikes() == null)) {
                     usersWhoLikeFilm.addAll(film.getUsersWhoSetLikes());
                 }
                 usersWhoLikeFilm.add(userid);
                 film.setUsersWhoSetLikes(usersWhoLikeFilm);
             }
         }
-        /*    if (!(filmListWithGenres.get(filmId - 1).getUsersWhoSetLikes() == null)) {
-                usersWhoLikeFilm.addAll(filmListWithGenres.get(filmId - 1).getUsersWhoSetLikes());
-            }
-            usersWhoLikeFilm.add(userid);
-            filmListWithGenres.get(filmId - 1).setUsersWhoSetLikes(usersWhoLikeFilm);
-*/
-
     }
 
     @Override
@@ -179,9 +173,9 @@ public class FilmsRepository implements FilmStorage {
         }
     }
 
-    private String checkName(String name){
-        if(name.contains("'")){
-            return name.replace("'","''");
+    private String checkName(String name) {
+        if (name.contains("'")) {
+            return name.replace("'", "''");
         }
         return name;
     }

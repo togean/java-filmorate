@@ -67,10 +67,6 @@ public class FilmServiceImpl implements FilmService {
 
     public List<Film> getPopularFilms(Integer count) {
         log.info("Запрошено {} популярных фильмов", count);
-        //Ограничиваем размер запроса размером имеющегося у нас списка фильмов
-        // if (filmStorage.getAllFilms().size() < count) {
-         //   count = filmStorage.getAllFilms().size();
-        //}
         log.info("Будет запрошено {} популярных фильмов", count);
         List<Film> listOfPopularFilms = new ArrayList<>(count);
         //Если фильмы в списке есть

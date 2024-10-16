@@ -46,7 +46,6 @@ public class UserServiceImpl implements UserService {
         Optional<User> userToBeUpdated = Optional.ofNullable(userStorage.getUserById(user.getId()));
         if (userToBeUpdated.isEmpty()) {
             throw new NotFoundException("Пользователя с таким ID нет");
-            //throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с таким ID нет");
         }
         if (validation(user)) {
             // обновлем пользователя

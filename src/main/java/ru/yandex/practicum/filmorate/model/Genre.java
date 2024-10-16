@@ -3,8 +3,9 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-@Data@Component
-public class Genre implements Comparable<Genre>{
+@Data
+@Component
+public class Genre implements Comparable<Genre> {
     Integer id;
     String name;
 
