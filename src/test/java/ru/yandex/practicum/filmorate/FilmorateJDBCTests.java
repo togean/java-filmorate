@@ -16,8 +16,10 @@ import ru.yandex.practicum.filmorate.repository.MpaRateRepository;
 import ru.yandex.practicum.filmorate.repository.UsersRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
+import java.util.Set;
 
 @JdbcTest
 @AutoConfigureTestDatabase
@@ -39,6 +41,14 @@ public class FilmorateJDBCTests {
                         assertThat(user).hasFieldOrPropertyWithValue("id", 1)
                 );
     }
+    @Test
+    public void testUserHasFriend() {
+        Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
+        Set<Integer> userFriends =  userOptional.get().getFriends();
+        Optional<Integer> friendId = userFriends.stream().findFirst();
+        assertEquals(friendId.get(),2);
+
+    }
 
     @Test
     public void testFindFilmById() {
@@ -49,6 +59,26 @@ public class FilmorateJDBCTests {
                 .hasValueSatisfying(film ->
                         assertThat(film).hasFieldOrPropertyWithValue("id", 1)
                 );
+    }
+
+    @Test
+    public void testFilmHasGenre() {
+
+        Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(1));
+        Set<Genre> genreSet =  filmOptional.get().getGenres();
+        Optional<Genre> filmGenre = genreSet.stream().findFirst();
+        int genreId = filmGenre.get().getId();
+        assertEquals(genreId,1);
+
+    }
+
+    @Test
+    public void testFilmHasUserWhoLikeIt() {
+        Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(1));
+        Set<Integer> userSet =  filmOptional.get().getUsersWhoSetLikes();
+        Optional<Integer> userId = userSet.stream().findFirst();
+        assertEquals(userId.get(),1);
+
     }
 
     @Test
@@ -72,5 +102,7 @@ public class FilmorateJDBCTests {
                         assertThat(mpa).hasFieldOrPropertyWithValue("id", 1)
                 );
     }
+
+
 
 }
