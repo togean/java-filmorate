@@ -77,7 +77,6 @@ public class FilmsRepository implements FilmStorage {
     }
 
     private void fillInGenres(List<Film> filmList, List<Film> filmListWithGenres, Film filmToCheck, Genre genre) {
-        ;
         SortedSet<Genre> genres = new TreeSet<>();
         if (filmList.contains(filmToCheck)) {
             Film updatedFilm = filmToCheck;
