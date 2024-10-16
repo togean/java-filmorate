@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.repository;
 
-import jdk.jshell.spi.ExecutionControl;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
