@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.FriendShipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static ru.yandex.practicum.filmorate.FilmorateApplication.log;
@@ -29,15 +32,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        return userStorage.createUser(user);
+        if (validation(user)) {
+            return userStorage.createUser(user);
+        }
+        return null;
     }
 
     @Override
     public User updateUser(User user) {
-        return userStorage.updateUser(user);
+        if (user.getId() == null) {
+            throw new ValidationException("Id пользователя должен быть указан");
+        }
+        Optional<User> userToBeUpdated = Optional.ofNullable(userStorage.getUserById(user.getId()));
+        if (userToBeUpdated.isEmpty()) {
+            throw new NotFoundException("Пользователя с таким ID нет");
+        }
+        if (validation(user)) {
+            // обновлем пользователя
+            return userStorage.updateUser(user);
+        }
+        return null;
     }
 
-    public void addFriend(Integer userId, Integer friendId) {
+    public List<User> addFriend(Integer userId, Integer friendId) {
         Optional<User> friend1 = Optional.ofNullable(userStorage.getUserById(userId));
         Optional<User> friend2 = Optional.ofNullable(userStorage.getUserById(friendId));
         if (friend1.isEmpty() || friend2.isEmpty()) {
@@ -47,23 +64,42 @@ public class UserServiceImpl implements UserService {
         Optional<Set<Integer>> listOfFriendsForUser1 = Optional.ofNullable(userStorage.getUserById(userId).getFriends());
         Optional<Set<Integer>> listOfFriendsForUser2 = Optional.ofNullable(userStorage.getUserById(friendId).getFriends());
         Set<Integer> newListOfFriendsForUser1 = new HashSet<>();
-        Set<Integer> newListOfFriendsForUser2 = new HashSet<>();
         if (listOfFriendsForUser1.isPresent()) {
             newListOfFriendsForUser1.addAll(listOfFriendsForUser1.get());
             newListOfFriendsForUser1.add(friend2.get().getId());
         } else {
             newListOfFriendsForUser1.add(friend2.get().getId());
         }
-        if (listOfFriendsForUser2.isPresent()) {
-            newListOfFriendsForUser2.addAll(listOfFriendsForUser2.get());
-            newListOfFriendsForUser2.add(friend1.get().getId());
+        Optional<Map<Integer, FriendShipStatus>> friendsMapForUser1 = Optional.ofNullable(userStorage.getUserById(userId).getFriendsStatuses());
+        Optional<Map<Integer, FriendShipStatus>> friendsMapForUser2 = Optional.ofNullable(userStorage.getUserById(friendId).getFriendsStatuses());
+        Map<Integer, FriendShipStatus> newfriendsMapForUser1 = new HashMap<>();
+        Map<Integer, FriendShipStatus> newfriendsMapForUser2 = new HashMap<>();
+        if (friendsMapForUser1.isPresent()) {
+            newfriendsMapForUser1.putAll(friendsMapForUser1.get());
+            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.NONAPPROVED);
         } else {
-            newListOfFriendsForUser2.add(friend1.get().getId());
+            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.NONAPPROVED);
+        }
+
+        //Проверяем, есть ли первый пользователь с друзьях у второго, если есть, то статус будет Подтверждён
+        if (listOfFriendsForUser2.get().contains(friend1.get().getId())) {
+            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.APPROVED);
+            if (friendsMapForUser2.isPresent()) {
+                newfriendsMapForUser2.putAll(friendsMapForUser2.get());
+                newfriendsMapForUser2.put(friend1.get().getId(), FriendShipStatus.APPROVED);
+            } else {
+                newfriendsMapForUser2.put(friend1.get().getId(), FriendShipStatus.APPROVED);
+            }
         }
         friend1.get().setFriends(newListOfFriendsForUser1);
-        friend2.get().setFriends(newListOfFriendsForUser2);
+        friend1.get().setFriendsStatuses(newfriendsMapForUser1);
+        friend2.get().setFriendsStatuses(newfriendsMapForUser2);
         userStorage.updateUser(friend1.get());
         userStorage.updateUser(friend2.get());
+        List<User> twoFriends = new ArrayList<>();
+        twoFriends.add(friend1.get());
+        twoFriends.add(friend2.get());
+        return twoFriends;
     }
 
     public void deleteFriend(Integer userId, Integer friendId) {
@@ -86,11 +122,20 @@ public class UserServiceImpl implements UserService {
             if ((!newListOfFriendsForUser2.contains(userId)) || (!newListOfFriendsForUser1.contains(friendId))) {
                 log.info("Выбранные пользователя не являются друзьями");
             }
-
+            Optional<Map<Integer, FriendShipStatus>> friendsMapForUser1 = Optional.ofNullable(userStorage.getUserById(userId).getFriendsStatuses());
+            Optional<Map<Integer, FriendShipStatus>> friendsMapForUser2 = Optional.ofNullable(userStorage.getUserById(friendId).getFriendsStatuses());
+            if (friendsMapForUser1.isPresent()) {
+                friendsMapForUser1.get().remove(friendId);
+            }
+            if (listOfFriendsForUser2.get().contains(userId)) {
+                friendsMapForUser2.get().put(userId, FriendShipStatus.NONAPPROVED);
+            }
             newListOfFriendsForUser1.remove(friendId);
-            newListOfFriendsForUser2.remove(userId);
             friend1.get().setFriends(newListOfFriendsForUser1);
+            friend1.get().setFriendsStatuses(friendsMapForUser1.get());
+
             friend2.get().setFriends(newListOfFriendsForUser2);
+            friend2.get().setFriendsStatuses(friendsMapForUser2.get());
             userStorage.updateUser(friend1.get());
             userStorage.updateUser(friend2.get());
         }
@@ -134,5 +179,36 @@ public class UserServiceImpl implements UserService {
             listOfCommonFriends.add(userStorage.getUserById(i));
         }
         return listOfCommonFriends;
+    }
+
+    private boolean validation(User user) {
+        boolean result = true;
+        if (user.getEmail() == null || user.getEmail().isBlank() || user.getEmail().isEmpty()) {
+            result = false;
+            log.info("Валидация email не прошла");
+            throw new ValidationException("Имейл не может быть пустым");
+        }
+        if (!user.getEmail().contains("@")) {
+            result = false;
+            log.info("Вторая валидация email не прошла");
+            throw new ValidationException("Неверный формат почтового адреса");
+        }
+        if (user.getLogin().isEmpty()) {
+            result = false;
+            log.info("Валидация логина не прошла");
+            throw new ValidationException("Логин не может быть пустым");
+        }
+        if (user.getLogin().contains(" ")) {
+            result = false;
+            log.info("Валидация логина на пробелы не прошла");
+            throw new ValidationException("Логин не может содержать пробелы");
+        }
+        if (user.getBirthday().isAfter(LocalDate.now())) {
+            result = false;
+            log.info("Валидация на дату рождения не прошла");
+            throw new ValidationException("Дата рождения не может быть в будущем");
+        }
+
+        return result;
     }
 }
