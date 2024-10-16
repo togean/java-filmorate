@@ -76,19 +76,19 @@ public class UserServiceImpl implements UserService {
         Map<Integer, FriendShipStatus> newfriendsMapForUser2 = new HashMap<>();
         if (friendsMapForUser1.isPresent()) {
             newfriendsMapForUser1.putAll(friendsMapForUser1.get());
-            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.Неподтверждён);
+            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.NonApproved);
         } else {
-            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.Неподтверждён);
+            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.NonApproved);
         }
 
         //Проверяем, есть ли первый пользователь с друзьях у второго, если есть, то статус будет Подтверждён
         if (listOfFriendsForUser2.get().contains(friend1.get().getId())) {
-            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.Подтверждён);
+            newfriendsMapForUser1.put(friend2.get().getId(), FriendShipStatus.Approved);
             if (friendsMapForUser2.isPresent()) {
                 newfriendsMapForUser2.putAll(friendsMapForUser2.get());
-                newfriendsMapForUser2.put(friend1.get().getId(), FriendShipStatus.Подтверждён);
+                newfriendsMapForUser2.put(friend1.get().getId(), FriendShipStatus.Approved);
             } else {
-                newfriendsMapForUser2.put(friend1.get().getId(), FriendShipStatus.Подтверждён);
+                newfriendsMapForUser2.put(friend1.get().getId(), FriendShipStatus.Approved);
             }
         }
         friend1.get().setFriends(newListOfFriendsForUser1);
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
                 friendsMapForUser1.get().remove(friendId);
             }
             if (listOfFriendsForUser2.get().contains(userId)) {
-                friendsMapForUser2.get().put(userId, FriendShipStatus.Неподтверждён);
+                friendsMapForUser2.get().put(userId, FriendShipStatus.NonApproved);
             }
             newListOfFriendsForUser1.remove(friendId);
             friend1.get().setFriends(newListOfFriendsForUser1);
