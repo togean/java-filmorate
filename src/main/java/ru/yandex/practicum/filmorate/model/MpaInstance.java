@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class MpaInstance {
-    Integer id;
-    String name;
+    private Integer id;
+    private String name;
 }

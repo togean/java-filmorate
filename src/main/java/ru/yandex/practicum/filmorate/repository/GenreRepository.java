@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.repository;
 
+import jdk.jshell.spi.ExecutionControl;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
@@ -23,12 +26,12 @@ public class GenreRepository implements GenreStorage {
 
     @Override
     public Genre createGenre(Genre genre) {
-        return null;//Пока нет требования в реализации
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод пока не реализован.");
     }
 
     @Override
     public Genre updateGenre(Genre genre) {
-        return null;//Пока нет требования в реализации
+        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "Метод пока не реализован.");
     }
 
     @Override

@@ -137,18 +137,18 @@ public class UsersRepository implements UserStorage {
     private String getFriendStatus(int Status) {
         switch (Status) {
             case 1:
-                return "Approed";
+                return "APPROVED";
             case 2:
-                return "NonApproved";
+                return "NONAPPROVED";
         }
         return null;
     }
 
     private int getFriendStatusByName(String Status) {
         switch (Status) {
-            case "Approed":
+            case "APPROVED":
                 return 1;
-            case "NonApproved":
+            case "NONAPPROVED":
                 return 2;
         }
         return 0;
