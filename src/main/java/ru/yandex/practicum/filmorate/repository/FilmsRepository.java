@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.exception.InternalServerErrorException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -58,7 +59,7 @@ public class FilmsRepository implements FilmStorage {
                     genre.setName(rs.getString("genrename"));
                     genre.setId(rs.getInt("genre_id"));
                 }
-                FillGenres(allFilms, allFilmsWithGenres, selectedFilm, genre);
+                fillInGenres(allFilms, allFilmsWithGenres, selectedFilm, genre);
             }
         });
 
@@ -66,16 +67,16 @@ public class FilmsRepository implements FilmStorage {
         jdbcTemplate.query(sql, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                Integer user_id = rs.getInt("user_id");
-                Integer film_id = rs.getInt("film_id");
-                getUsers(allFilmsWithGenres, user_id, film_id);
+                Integer userid = rs.getInt("user_id");
+                Integer filmid = rs.getInt("film_id");
+                getUsers(allFilmsWithGenres, userid, filmid);
 
             }
         });
         return allFilmsWithGenres;
     }
 
-    private void FillGenres(List<Film> filmList, List<Film> filmListWithGenres, Film filmToCheck, Genre genre) {
+    private void fillInGenres(List<Film> filmList, List<Film> filmListWithGenres, Film filmToCheck, Genre genre) {
         ;
         SortedSet<Genre> genres = new TreeSet<>();
         if (filmList.contains(filmToCheck)) {
@@ -89,6 +90,7 @@ public class FilmsRepository implements FilmStorage {
             try {
                 updatedFilm = filmToCheck.clone();
             } catch (CloneNotSupportedException ex) {
+                throw new InternalServerErrorException("Неполучилось клонировать объект Film");
             }
             genres.stream().sorted(new Comparator<Genre>() {
                 @Override
@@ -106,6 +108,7 @@ public class FilmsRepository implements FilmStorage {
             try {
                 filmWithGenres = filmToCheck.clone();
             } catch (CloneNotSupportedException ex) {
+                throw new InternalServerErrorException("Неполучилось клонировать объект Film");
             }
             genres.clear();
             genres.add(genre);
